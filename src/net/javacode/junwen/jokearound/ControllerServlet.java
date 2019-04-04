@@ -63,6 +63,12 @@ public class ControllerServlet extends HttpServlet {
             case "/loginuser":
                 loginUser(request, response);
                 break;
+            case "/signup":
+            	signupUser(request, response);
+            	break;
+            case "/loginpage":
+            	loginPage(request, response);
+            	break;
             case "/logout":
             	logoutUser(request, response);
             	break;
@@ -108,6 +114,36 @@ public class ControllerServlet extends HttpServlet {
             case "/addfavjoke":
             	addFavJoke(request, response);
             	break;
+            case "/insertUser":
+            	insertUser(request, response);
+            	break;
+            case "/stats":
+            	showStats(request, response);
+            	break;
+            case "/highlyRevJokes":
+            	highlyRevJokes(request, response);
+            	break;
+            case "/mostActiveUser":
+            	mostActiveUser(request, response);
+            	break;
+            case "/checkCommonFrnd":
+            	checkCommonFrnd(request, response);
+            	break;
+            case "/userNeverPstExcellentJ":
+            	userNeverPstExcellentJ(request, response);
+            	break;
+            case "/userNeverPstPoorR":
+            	userNeverPstPoorR(request, response);
+            	break;
+            case "/userAlwaysPstPoorR":
+            	userAlwaysPstPoorR(request, response);
+            	break;
+            case "/userNeverRecPoorR":
+            	userNeverRecPoorR(request, response);
+            	break;
+            case "/userPairExcellentR":
+            	userPairExcellentR(request, response);
+            	break;
             default:
                 listJoke(request, response);
                 break;
@@ -116,7 +152,6 @@ public class ControllerServlet extends HttpServlet {
             throw new ServletException(ex);
         }
 	}
-
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -165,6 +200,20 @@ public class ControllerServlet extends HttpServlet {
         }
 		
         
+    }
+	
+	private void signupUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, SQLException {
+		List<User> registerUsers = jokeDAO.listRegisterUsers();
+        request.setAttribute("registerUsers", registerUsers);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("SignUp.jsp");
+        dispatcher.forward(request, response);
+    }
+	
+	private void loginPage(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
+        dispatcher.forward(request, response);
     }
 	
 	private void showNewForm(HttpServletRequest request, HttpServletResponse response)
@@ -386,5 +435,113 @@ public class ControllerServlet extends HttpServlet {
 	        response.sendRedirect("listJoke");
 
 	    }
+	    
+	    private void insertUser(HttpServletRequest request, HttpServletResponse response)
+	            throws SQLException, IOException, ServletException {
+		 	
+	        String username = request.getParameter("username");
+	        String email = request.getParameter("email");
+	        String firstname = request.getParameter("firstname");
+	        String lastname = request.getParameter("lastname");
+	        String password = request.getParameter("password1");
+	 
+	        User user = new User(username,firstname, lastname, password, email);
+	        int userId = jokeDAO.insertUser(user);
+	        if(userId > 0)
+	        {
+	        	//set sessions
+	        	HttpSession session = request.getSession();
+	        	session.setAttribute("username", username);
+	        	session.setAttribute("userid", userId);
+	        	session.setAttribute("isroot", false);
+	        	
+	        	RequestDispatcher dispatcher = request.getRequestDispatcher("home");
+                dispatcher.forward(request, response);
+	        }else {
+	        	response.sendRedirect("loginpage");
+	        }
 
+	    }
+	    
+	    private void showStats(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("Statistics.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
+	    private void highlyRevJokes(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("HighlyRevJokes.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
+	    private void mostActiveUser(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("MostActiveUser.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
+	    private void checkCommonFrnd(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("CheckCommonFrnd.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
+	    private void userNeverPstExcellentJ(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("UserNeverPstExcellentJ.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
+	    private void userNeverPstPoorR(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("UserNeverPstPoorR.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
+	    private void userAlwaysPstPoorR(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("UserAlwaysPstPoorR.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
+	    private void userNeverRecPoorR(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("UserNeverRecPoorR.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
+	    private void userPairExcellentR(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException, SQLException {
+	    	//query data for default link: users posted multi-jokes on same day
+			//List<User> registerUsers = jokeDAO.listRegisterUsers();
+	        //request.setAttribute("registerUsers", registerUsers);
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("UserPairExcellentR.jsp");
+	        dispatcher.forward(request, response);
+	    }
+	    
 }

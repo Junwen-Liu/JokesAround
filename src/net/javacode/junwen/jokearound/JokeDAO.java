@@ -438,5 +438,60 @@ public boolean delFavJoke(int userID, int jokeID) throws SQLException {
     disconnect();
     return rowDeleted;
 }
+public List<User> listRegisterUsers() throws SQLException {
+    List<User> listRegisterUsers = new ArrayList<>();
+     
+    String sql = "select userName, email from User";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    ResultSet resultSet = statement.executeQuery(sql);
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+        String email = resultSet.getString("email");
+         
+        User user = new User(userName, email);
+        listRegisterUsers.add(user);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listRegisterUsers;
+}
+
+public int insertUser(User user) throws SQLException {
+    String sql = "INSERT INTO user (userName, firstName, lastName, password, email) VALUES (?, ?, ?, ?, ?)";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    statement.setString(1, user.getUsername());
+    statement.setString(2, user.getFirstname());
+    statement.setString(3, user.getLastname());
+    statement.setString(4, user.password);
+    statement.setString(5, user.email);
+     
+    boolean rowInserted = statement.executeUpdate() > 0;
+    statement.close();
+    
+    int userID = 0;
+    if(rowInserted) {
+    sql = "select LAST_INSERT_ID() as userID";
+    PreparedStatement statement2 = jdbcConnection.prepareStatement(sql);
+    ResultSet resultSet = statement2.executeQuery(sql);
+    
+    if (resultSet.next())
+    {
+    	userID = resultSet.getInt("userID");
+    }
+    statement2.close();
+    }
+    
+    disconnect();
+    return userID;
+}
 
 }

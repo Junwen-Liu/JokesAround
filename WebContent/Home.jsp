@@ -24,12 +24,16 @@ a:active {
 }
 
 .rev{
-color:green; 
+color:#913252; 
 font-style: italic; 
 font-weight: bold;
-font-size:15px;
+font-size:14px;
 background: lightgray;
 
+}
+
+.revtr td{
+line-height: 11px;
 }
 
 .toprow{
@@ -95,7 +99,8 @@ function searchFunc() {
             <a href="listfavuser">My Favorite Users</a>
             &nbsp;&nbsp;&nbsp;
             <a href="listJoke">List All Jokes</a>
-             
+             &nbsp;&nbsp;&nbsp;
+            <a href="stats">Statistics</a>
         </h3>
         <hr>
 		</center>
@@ -168,7 +173,7 @@ function searchFunc() {
                 </tr>
                 <c:if test="${not empty joke.listReview}">
                 <c:forEach var="review" items="${joke.listReview}">
-                <tr><td class="hidden"><u><c:out value="${joke.tags}" /></u></td>
+                <tr class="revtr"><td class="hidden"><u><c:out value="${joke.tags}" /></u></td>
                 <td class="rev">ReviewedBy:&nbsp&nbsp<c:out value="${review.userName}" /></td>
                 <td class="rev">Score:&nbsp&nbsp<c:out value="${review.score}" /></td>
                 <td class="rev">Remark:&nbsp&nbsp<c:out value="${review.remark}" /></td>
