@@ -1,5 +1,7 @@
 package net.javacode.junwen.jokearound;
 
+import java.util.Date;
+
 public class User {
 	protected int userid;
 	protected int age;
@@ -11,9 +13,33 @@ public class User {
     protected String gendar;
     protected boolean isroot;
     protected boolean isfrnd;
+    protected Date createdDateJ;
+    protected int totaljokes;
     
     
 
+
+	public int getTotaljokes() {
+		return totaljokes;
+	}
+
+	public void setTotaljokes(int totaljokes) {
+		this.totaljokes = totaljokes;
+	}
+
+	public User(String username, Date createdDateJ) {
+		super();
+		this.username = username;
+		this.createdDateJ = createdDateJ;
+	}
+
+	public Date getCreatedDateJ() {
+		return createdDateJ;
+	}
+
+	public void setCreatedDateJ(Date createdDateJ) {
+		this.createdDateJ = createdDateJ;
+	}
 
 	public User() {
 		super();
@@ -32,6 +58,12 @@ public class User {
 		this.username = username;
 		this.isfrnd = isfrnd;
 		this.userid = userid;
+	}
+
+	public User(String username, int totaljokes) {
+		super();
+		this.username = username;
+		this.totaljokes = totaljokes;
 	}
 
 	public User(String username, String email) {

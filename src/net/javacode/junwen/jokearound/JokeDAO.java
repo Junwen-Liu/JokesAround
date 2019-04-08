@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.javacode.junwen.jokearound.*;
@@ -494,4 +495,217 @@ public int insertUser(User user) throws SQLException {
     return userID;
 }
 
+public List<User> listStatUsers(String tag1, String tag2) throws SQLException {
+    List<User> listStatUsers = new ArrayList<>();
+     
+    String sql = "select distinct userName, J1.createdDate from joke J1 join joke J2 on J1.userID = J2.userID join user u on u.userID = j1.userID and date(J1.createdDate) = date(J2.createdDate) and J1.jokeID <> J2.jokeID join joke_tag T1 on T1.jokeID = J1.jokeID join joke_tag T2 on T2.jokeID = J2.jokeID and T1.tag =? and T2.tag =?";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    statement.setString(1, tag1);
+    statement.setString(2, tag2);
+     
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+        Date createdDate = resultSet.getDate("createdDate");
+        User user = new User(userName, createdDate);
+        listStatUsers.add(user);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listStatUsers;
+}
+public List<Joke> listHighlyJoke(String userID) throws SQLException {
+    List<Joke> listJoke = new ArrayList<>();
+     
+    String sql = "select distinct J.*, R.score from joke J join joke_review R on J.jokeID = R.jokeID join user u on u.userID = j.userID where u.userName = ? and not exists (select count(*) as cnt from joke_review R1 where R1.jokeID = R.jokeID and R1.score in ('poor', 'fair') group by R1.jokeID  limit 1)";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    statement.setString(1, userID);
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+        String title = resultSet.getString("title");
+        String description = resultSet.getString("description");
+        String createDate  = resultSet.getString("createdDate");
+        String score  = resultSet.getString("score");
+         
+        Joke joke = new Joke(title, description, createDate,score);
+        listJoke.add(joke);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listJoke;
+}
+
+public List<User> mostActiveUsers() throws SQLException {
+    List<User> listActiveUsers = new ArrayList<>();
+     
+    String sql = "select u.userName, count(j.jokeID) as 'total' from joke j, user u where j.createdDate >= '2018-03-01' and j.userID = u.userID group by j.userID having count(j.jokeID) = ( select count(jokeID) as cnt from joke  where createdDate >= '2018-03-01' group by userID order by cnt desc limit 1)";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+        int total = resultSet.getInt("total");
+        User user = new User(userName, total);
+        listActiveUsers.add(user);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listActiveUsers;
+}
+
+public List<String> checkCommonUsers(String uname1, String uname2) throws SQLException {
+    List<String> listUsers = new ArrayList<>();
+     
+    String sql = "select distinct u3.userName from user_favorite_friend F1 join user_favorite_friend F2 on F1.friendID = F2.friendID join user u1 on F1.userID = u1.userID join user u2 on F2.userID = u2.userID join user u3 on F1.friendID = u3.userID where u1.userName = ? and u2.userName=?;";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    statement.setString(1, uname1);
+    statement.setString(2, uname2);
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+        listUsers.add(userName);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listUsers;
+}
+
+public List<String> listNeverPstExcJUsers() throws SQLException {
+    List<String> listUsers = new ArrayList<>();
+     
+    String sql = "select distinct u.userName from joke j , user u where j.userID=u.userID and j.jokeID not in (select jokeID from joke_review where score = 'excellent' group by jokeID having count(userID) >=3);";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+        listUsers.add(userName);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listUsers;
+}
+
+public List<String> userNeverPstPoorR() throws SQLException {
+    List<String> listUsers = new ArrayList<>();
+     
+    String sql = "select distinct u.userName from joke_review R, user u where R.userID=u.userID and R.userID not in (select R1.userID from joke_review R1 where R1.score = 'poor')";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+        listUsers.add(userName);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listUsers;
+}
+
+public List<String> userAlwaysPstPoorR() throws SQLException {
+    List<String> listUsers = new ArrayList<>();
+     
+    String sql = "select distinct u.userName from user u, joke_review R where R.userID=u.userID and R.userID not in (select R1.userID from joke_review R1 where R1.score <> 'poor')";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+        listUsers.add(userName);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listUsers;
+}
+
+public List<String> userNeverRecPoorR() throws SQLException {
+    List<String> listUsers = new ArrayList<>();
+     
+    String sql = "select distinct u.userName from joke j, user u where j.userID=u.userID and j.userID not in (select J1.userID from joke_review R1 join joke J1 on J1.jokeID = R1.jokeID where R1.score = 'poor')";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+        listUsers.add(userName);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listUsers;
+}
+
+public List<UserPair> userPairExcellentR() throws SQLException {
+    List<UserPair> listUsers = new ArrayList<>();
+     
+    String sql = "with cte as (select distinct R.userID as 'reviewerID', J.userID from joke_review R join joke J on J.jokeID = R.jokeID where (select count(J2.jokeID) from joke_review R2 join joke J2 on J2.jokeID = R2.jokeID where 1=1 and J2.userID = J.userID and R2.userID = R.userID and R2.score = 'excellent') = (select count(distinct J3.jokeID) from joke_review R3 join joke J3 on J3.jokeID = R3.jokeID where 1=1 and J3.userID = J.userID) and (select count(R2.jokeID) from joke_review R2 join joke J2 on J2.jokeID = R2.jokeID where 1=1 and R.userID = J2.userID) > 0 and (select count(J2.jokeID) from joke_review R2 join joke J2 on J2.jokeID = R2.jokeID where 1=1 and J2.userID = R.userID and R2.userID = J.userID and R2.score = 'excellent') = (select count(distinct J3.jokeID) from joke_review R3 join joke J3 on J3.jokeID = R3.jokeID where 1=1 and J3.userID = R.userID))select distinct if(u1.userName > u2.userName, u1.userName, u2.userName) as reviewerName, if(u1.userName > u2.userName, u2.userName, u1.userName) as userName from cte as T1 join cte as T2  on T1.reviewerID = T2.userID  and T1.userID = T2.reviewerID join user u1 on T1.reviewerID = u1.userID join user u2 on T1.userID = u2.userID";
+    connect();
+     
+    PreparedStatement statement = jdbcConnection.prepareStatement(sql);
+    ResultSet resultSet = statement.executeQuery();
+     
+    while (resultSet.next()) {
+    	String userName = resultSet.getString("userName");
+    	String reviewerName = resultSet.getString("reviewerName");
+    	UserPair upair = new UserPair(userName, reviewerName);
+        listUsers.add(upair);
+    }
+     
+    resultSet.close();
+    statement.close();
+     
+    disconnect();
+     
+    return listUsers;
+}
 }

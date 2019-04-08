@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+		<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,6 +43,14 @@ li a:hover:not(.active) {
   background-color: #555;
   color: white;
 }
+.title{
+border-right: 2px solid black;
+border-left: 2px solid black;
+border-top:2px solid black;
+}
+.toprow{
+border-top: 5px solid #58a2aa;
+}
 </style>
 </head>
 <body>
@@ -68,8 +77,15 @@ li a:hover:not(.active) {
 		  <li><a class="active" href="userPairExcellentR">User pair gives excellent reviews</a></li>
 		</ul>
 		<div style="margin-left:25%;padding:1px 10px;">
-		  <h2>List a user pair such that they always gave each other ""excellent" review for every single joke they posted</h2>
-		  
+		  <h3>Here is the user pair such that they always gave each other ""excellent" review for every single joke they posted</h3>
+		  <table border="0" cellpadding="7">
+			<th class="title">User1 Name</th>
+                <th class="title">User2 Name</th>
+			<c:forEach var="upair" items="${listUsers}">
+				<tr><td class="toprow">${upair.user1}</td>
+				<td class="toprow">${upair.user2}</td></tr>
+			</c:forEach>
+			</table>
 		</div>
 
 

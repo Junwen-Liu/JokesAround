@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+	<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,6 +43,21 @@ li a:hover:not(.active) {
   background-color: #555;
   color: white;
 }
+.title{
+border-right: 2px solid black;
+border-left: 2px solid black;
+border-top:2px solid black;
+}
+.toprow{
+border-top: 5px solid #58a2aa;
+}
+.select{
+width: 130px !important;
+padding: 7px 20px;
+  box-sizing: border-box;
+  border: 1px solid black;
+  border-radius: 4px;
+}
 </style>
 </head>
 <body>
@@ -68,7 +84,41 @@ li a:hover:not(.active) {
 		  <li><a  href="userPairExcellentR">User pair gives excellent reviews</a></li>
 		</ul>
 		<div style="margin-left:25%;padding:1px 10px;">
-		  <h2>List other users who are befriended by both users</h2>
+		  <h2></h2>
+		  <c:if test="${not empty listCommonUsers}">
+		  <h3>Here is the list of users who are befriended by both selected users</h3>
+			<table border="0" cellpadding="7">
+			<th class="title">Common befriended Users</th>
+			<c:forEach var="user" items="${listCommonUsers}">
+				<tr><td class="toprow">${user}</td></tr>
+			</c:forEach>
+			</table>
+		</c:if>
+		<c:if test="${empty listCommonUsers}">
+			<form action="checkCommonFrnd" method="post">
+				<table border="0" cellpadding="5">
+					<h3>Check users who are befriended by both selected users</h3>
+					</caption>
+					<h4>Select one of registered user in dropdown menu:</h4>
+					<select class="select" name="selectedUser1">
+					    <c:forEach var="user" items="${listRegUsers}">
+					        <option value="${user.username}"><c:out value="${user.username}" /></option>
+					    </c:forEach>
+					</select>
+					<h4>Select another registered user in dropdown menu:</h4>
+					<select class="select" name="selectedUser2">
+					    <c:forEach var="user" items="${listRegUsers}">
+					        <option value="${user.username}"><c:out value="${user.username}" /></option>
+					    </c:forEach>
+					</select>
+					<tr><td></td></tr>
+					<tr>
+						<td colspan="2" align="center"><input type="submit"
+							value="Submit" /></td>
+					</tr>
+				</table>
+			</form>
+		</c:if>
 		  
 		</div>
 

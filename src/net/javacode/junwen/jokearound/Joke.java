@@ -120,6 +120,14 @@ public class Joke {
 		this.fav = fav;
 	}
 
+	public Joke(String title, String description, String createDate, String score) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.createDate = createDate;
+		this.score = score;
+	}
+
 	public Joke(int jokeId, int userId, String userName, String title, String description, String createDate, String tags, int fav, String score, String rev, int isfrnd, List<Review> listReview) {
 		super();
 		this.jokeID = jokeId;

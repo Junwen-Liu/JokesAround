@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+	<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,6 +43,14 @@ li a:hover:not(.active) {
   background-color: #555;
   color: white;
 }
+.title{
+border-right: 2px solid black;
+border-left: 2px solid black;
+border-top:2px solid black;
+}
+.toprow{
+border-top: 5px solid #58a2aa;
+}
 </style>
 </head>
 <body>
@@ -68,8 +77,15 @@ li a:hover:not(.active) {
 		  <li><a  href="userPairExcellentR">User pair gives excellent reviews</a></li>
 		</ul>
 		<div style="margin-left:25%;padding:1px 10px;">
-		  <h2>List the users who posted the most number of jokes since 3/1/2019</h2>
-		  
+		  <h3>Here is the list the users who posted the most number of jokes since 3/1/2019</h3>
+			<table border="0" cellpadding="7">
+			<th class="title">UserName</th>
+                <th class="title">Number of post</th>
+			<c:forEach var="user" items="${listActiveUsers}">
+				<tr><td class="toprow">${user.username}</td>
+				<td class="toprow">${user.totaljokes}</td></tr>
+			</c:forEach>
+			</table>
 		</div>
 
 
